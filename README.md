@@ -394,13 +394,13 @@ To remove the `./apirest` directory with the default installation content and in
   ```bash
   $ rm -rfv ./apirest/* ./apirest/.[!.]*$
   $ git rm -r --cached apirest
-  $ git commit -m "Remove apirest directory and its default installation"
+  $ git commit -m "maint: apirest directory and its default installation removed to detach from platform repository"
   ```
 
 - Add the desired repository as a submodule:
   ```bash
   $ git submodule add git@[vcs]:[account]/[repository].git ./apirest
-  $ git commit -m "Add apirest as a git submodule"
+  $ git commit -m "maint: apirest added as a git submodule"
   ```
 
 - To update submodule contents:

@@ -29,6 +29,8 @@ dist-ssr
 
 # Project
 
+/ Makefile
+
 /resources/database/*
 !/resources/database/.gitkeep
 /resources/docs/apirest/project/*

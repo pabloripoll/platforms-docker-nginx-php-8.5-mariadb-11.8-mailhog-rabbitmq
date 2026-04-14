@@ -20,18 +20,13 @@ endif
 
 include .env
 
-APIREST_BRANCH:=develop
-APIREST_PROJECT:=$(PROJECT_NAME) - APIREST
-APIREST_CONTAINER:=$(addsuffix -$(APIREST_CAAS), $(PROJECT_LEAD))
-DATABASE_CONTAINER:=$(addsuffix -$(DATABASE_CAAS), $(PROJECT_LEAD))
 ROOT_DIR=$(patsubst %/,%,$(dir $(realpath $(firstword $(MAKEFILE_LIST)))))
 DIR_BASENAME=$(shell basename $(ROOT_DIR))
-
-.PHONY: help
 
 # -------------------------------------------------------------------------------------------------
 #  Help
 # -------------------------------------------------------------------------------------------------
+.PHONY: help
 
 help: ## shows this Makefile help message
 	echo "Usage: $$ make "${C_GRN}"[target]"${C_END}
@@ -41,13 +36,11 @@ help: ## shows this Makefile help message
 # -------------------------------------------------------------------------------------------------
 #  System
 # -------------------------------------------------------------------------------------------------
-.PHONY: local-hostname local-ownership local-ownership-set
+.PHONY: local-info local-ownership local-ownership-set
 
-local-hostname: ## shows local machine ip and container ports set
-	echo "Container Address:"
-	echo ${C_BLU}"LOCAL: "${C_END}"$(word 1,$(shell hostname -I))"
-	echo ${C_BLU}"APIREST: "${C_END}"$(word 1,$(shell hostname -I)):"$(APIREST_PORT)
-	echo ${C_BLU}"DATABASE: "${C_END}"$(word 1,$(shell hostname -I)):"$(DATABASE_PORT)
+local_ip ?= $(word 1,$(shell hostname -I))
+local-info: ## shows local machine ip and container ports set
+	echo ${C_BLU}"Local IP / Hostname:"${C_END} ${C_YEL}"$(local_ip)"${C_END}
 
 user ?= ${USER}
 group ?= root
@@ -56,6 +49,32 @@ local-ownership: ## shows local ownership
 
 local-ownership-set: ## sets recursively local root directory ownership
 	$(SUDO) chown -R ${user}:${group} $(ROOT_DIR)/
+
+# -------------------------------------------------------------------------------------------------
+#  Services Full Control
+# -------------------------------------------------------------------------------------------------
+.PHONY: services-set services-create services-info services-start services-restart services-stop services-destroy
+
+services-set: ## sets all container services
+	$(MAKE) apirest-set db-set mailer-set broker-set
+
+services-create: ## builds and starts up all container services
+	$(MAKE) apirest-create db-create mailer-create broker-create
+
+services-info: ## shows all container services information
+	$(MAKE) apirest-info db-info mailer-info broker-info
+
+services-start: ## starts all container services
+	$(MAKE) apirest-start db-start mailer-start broker-start
+
+services-restart: ## restarts all container services
+	$(MAKE) apirest-restart db-restart mailer-restart broker-restart
+
+services-stop: ## stops all container services
+	$(MAKE) apirest-stop db-stop mailer-stop broker-stop
+
+services-destroy: ## destroys all container services
+	$(MAKE) apirest-destroy db-destroy mailer-destroy broker-destroy
 
 # -------------------------------------------------------------------------------------------------
 #  Backend API Service
@@ -92,7 +111,7 @@ apirest-restart: ## restarts the running apirest container
 
 apirest-destroy: ## destroys completly the apirest container
 	echo ${C_RED}"Attention!"${C_END};
-	echo ${C_YEL}"You're about to remove the "${C_BLU}"$(APIREST_PROJECT)"${C_END}" container and delete its image resource."${C_END};
+	echo ${C_YEL}"You're about to remove the "${C_BLU}"$(APIREST_PLTF)"${C_END}" container and delete its image resource."${C_END};
 	@echo -n ${C_RED}"Are you sure to proceed? "${C_END}"[y/n]: " && read response && if [ $${response:-'n'} != 'y' ]; then \
         echo ${C_GRN}"K.O.! container has been stopped but not destroyed."${C_END}; \
     else \
@@ -141,7 +160,7 @@ db-restart: ## restarts the running database container
 
 db-destroy: ## destroys completly the database container with its data
 	echo ${C_RED}"Attention!"${C_END};
-	echo ${C_YEL}"You're about to remove the database container and delete its image resource and persistance data."${C_END};
+	echo ${C_YEL}"You're about to remove the "${C_BLU}"$(DATABASE_PLTF)"${C_END}" container and delete its image resource and persistance data."${C_END};
 	@echo -n ${C_RED}"Are you sure to proceed? "${C_END}"[y/n]: " && read response && if [ $${response:-'n'} != 'y' ]; then \
         echo ${C_GRN}"K.O.! container has been stopped but not destroyed."${C_END}; \
     else \
@@ -186,43 +205,92 @@ db-sql-drop: ## drops the container main database but recreates the database wit
 # -------------------------------------------------------------------------------------------------
 #  Mailer Service
 # -------------------------------------------------------------------------------------------------
-.PHONY: mailhog-hostcheck mailhog-info mailhog-set mailhog-create mailhog-network mailhog-ssh mailhog-start mailhog-stop mailhog-destroy
+.PHONY: mailer-hostcheck mailer-info mailer-set mailer-create mailer-network mailer-ssh mailer-start mailer-stop mailer-destroy
 
-mailhog-hostcheck: ## shows this project ports availability on local machine for mailer container
+mailer-hostcheck: ## shows this project ports availability on local machine for mailer container
 	cd platform/$(MAILER_PLTF) && $(MAKE) port-check
 
-mailhog-info: ## shows the mailer docker related information
+mailer-info: ## shows the mailer docker related information
 	cd platform/$(MAILER_PLTF) && $(MAKE) info
 
-mailhog-set: ## sets the mailer enviroment file to build the container
+mailer-set: ## sets the mailer enviroment file to build the container
 	cd platform/$(MAILER_PLTF) && $(MAKE) env-set
 
-mailhog-create: ## creates the mailer container from Docker image
+mailer-create: ## creates the mailer container from Docker image
 	cd platform/$(MAILER_PLTF) && $(MAKE) build up
 
-mailhog-network: ## creates the mailer container network - execute this recipe first before others
-	$(MAKE) mailhog-stop
+mailer-network: ## creates the mailer container network - execute this recipe first before others
+	$(MAKE) mailer-stop
 	cd platform/$(MAILER_PLTF) && $(DOCKER_COMPOSE) -f docker-compose.yml -f docker-compose.network.yml up -d
 
-mailhog-ssh: ## enters the mailer container shell
+mailer-ssh: ## enters the mailer container shell
 	cd platform/$(MAILER_PLTF) && $(MAKE) ssh
 
-mailhog-start: ## starts the mailer container running
+mailer-start: ## starts the mailer container running
 	cd platform/$(MAILER_PLTF) && $(MAKE) start
 
-mailhog-stop: ## stops the mailer container but its assets will not be destroyed
+mailer-stop: ## stops the mailer container but its assets will not be destroyed
 	cd platform/$(MAILER_PLTF) && $(MAKE) stop
 
-mailhog-restart: ## restarts the running mailer container
+mailer-restart: ## restarts the running mailer container
 	cd platform/$(MAILER_PLTF) && $(MAKE) restart
 
-mailhog-destroy: ## destroys completly the mailer container
+mailer-destroy: ## destroys completly the mailer container
 	echo ${C_RED}"Attention!"${C_END};
-	echo ${C_YEL}"You're about to remove the "${C_BLU}"$(MAILER_PROJECT)"${C_END}" container and delete its image resource."${C_END};
+	echo ${C_YEL}"You're about to remove the "${C_BLU}"$(MAILER_PLTF)"${C_END}" container and delete its image resource."${C_END};
 	@echo -n ${C_RED}"Are you sure to proceed? "${C_END}"[y/n]: " && read response && if [ $${response:-'n'} != 'y' ]; then \
         echo ${C_GRN}"K.O.! container has been stopped but not destroyed."${C_END}; \
     else \
 		cd platform/$(MAILER_PLTF) && $(MAKE) stop clear destroy; \
+		echo -n ${C_GRN}"Do you want to clear DOCKER cache? "${C_END}"[y/n]: " && read response && if [ $${response:-'n'} != 'y' ]; then \
+			echo ${C_YEL}"The following command is delegated to be executed by user:"${C_END}; \
+			echo "$$ $(DOCKER) system prune"; \
+		else \
+			$(DOCKER) system prune; \
+			echo ${C_GRN}"O.K.! DOCKER cache has been cleared up."${C_END}; \
+		fi \
+	fi
+
+# -------------------------------------------------------------------------------------------------
+#  Broker Service
+# -------------------------------------------------------------------------------------------------
+.PHONY: broker-hostcheck broker-info broker-set broker-create broker-network broker-ssh broker-start broker-stop broker-destroy
+
+broker-hostcheck: ## shows this project ports availability on local machine for broker container
+	cd platform/$(BROKER_PLTF) && $(MAKE) port-check
+
+broker-info: ## shows the broker docker related information
+	cd platform/$(BROKER_PLTF) && $(MAKE) info
+
+broker-set: ## sets the broker enviroment file to build the container
+	cd platform/$(BROKER_PLTF) && $(MAKE) env-set
+
+broker-create: ## creates the broker container from Docker image
+	cd platform/$(BROKER_PLTF) && $(MAKE) build up
+
+broker-network: ## creates the broker container network - execute this recipe first before others
+	$(MAKE) broker-stop
+	cd platform/$(BROKER_PLTF) && $(DOCKER_COMPOSE) -f docker-compose.yml -f docker-compose.network.yml up -d
+
+broker-ssh: ## enters the broker container shell
+	cd platform/$(BROKER_PLTF) && $(MAKE) ssh
+
+broker-start: ## starts the broker container running
+	cd platform/$(BROKER_PLTF) && $(MAKE) start
+
+broker-stop: ## stops the broker container but its assets will not be destroyed
+	cd platform/$(BROKER_PLTF) && $(MAKE) stop
+
+broker-restart: ## restarts the running broker container
+	cd platform/$(BROKER_PLTF) && $(MAKE) restart
+
+broker-destroy: ## destroys completly the broker container
+	echo ${C_RED}"Attention!"${C_END};
+	echo ${C_YEL}"You're about to remove the "${C_BLU}"$(BROKER_PLTF)"${C_END}" container and delete its image resource."${C_END};
+	@echo -n ${C_RED}"Are you sure to proceed? "${C_END}"[y/n]: " && read response && if [ $${response:-'n'} != 'y' ]; then \
+        echo ${C_GRN}"K.O.! container has been stopped but not destroyed."${C_END}; \
+    else \
+		cd platform/$(BROKER_PLTF) && $(MAKE) stop clear destroy; \
 		echo -n ${C_GRN}"Do you want to clear DOCKER cache? "${C_END}"[y/n]: " && read response && if [ $${response:-'n'} != 'y' ]; then \
 			echo ${C_YEL}"The following command is delegated to be executed by user:"${C_END}; \
 			echo "$$ $(DOCKER) system prune"; \

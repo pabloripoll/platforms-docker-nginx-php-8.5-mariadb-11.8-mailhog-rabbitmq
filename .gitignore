@@ -29,7 +29,7 @@ dist-ssr
 
 # Project
 
-/ Makefile
+/Makefile
 
 /resources/database/*
 !/resources/database/.gitkeep

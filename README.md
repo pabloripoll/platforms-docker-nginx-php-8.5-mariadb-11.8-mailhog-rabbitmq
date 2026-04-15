@@ -111,7 +111,7 @@ This platform has it own Makefile recipes to manage the container and it recipes
 
 Environment variables are highly important for maintaining the platform. Try to Keep them whatever the Docker commands case.
 
-API environment: `./platform/nginx-php/docker/.env`
+API environment: `./platform/nginx-php-8.5/docker/.env`
 ```bash
 COMPOSE_PROJECT_LEAD="myproj"
 COMPOSE_PROJECT_CNET="mp-dev"
@@ -206,53 +206,9 @@ COMPOSE_PROJECT_APP_PORT=7505   # Port to see on browser the mail sent
 
 ## <a id="setup-containers"></a>Configure Docker Containers
 
-Create the root `./.env` file from the [./.env.example](./.env.example) and follow its description to configure the platforms. The end result would be like this:
-```bash
-SUDO=sudo
-DOCKER=sudo docker
-DOCKER_COMPOSE=sudo docker compose
+Copy the local **GNU Makefile** file from the [./resources/automation/local/Makefile](./resources/automation/local/Makefile) into the root of this repository.
 
-PROJECT_NAME="MY PROJECT"
-PROJECT_LEAD=myproj
-PROJECT_HOST="127.0.0.1"
-PROJECT_CNET=mp-dev
-
-APIREST_PLTF=nginx-php-8.5
-APIREST_IMGK=alpine3.23-nginx1.28-php8.5
-APIREST_PORT=7501
-APIREST_BIND="../../../apirest"
-APIREST_CAAS=mp-apirest-dev
-APIREST_CAAS_USER=myproj
-APIREST_CAAS_GROUP=myproj
-APIREST_CAAS_MEM=128M
-APIREST_CAAS_SWAP=512M
-APIREST_GIT_SSH=~/.ssh/id_rsa
-APIREST_GIT_HOST=github.org
-APIREST_GIT_BRANCH=develop
-APIREST_DOMAIN=
-
-DATABASE_PLTF=mariadb-11.8
-DATABASE_IMGK=ubuntu24-mariadb-11.8
-DATABASE_PORT=7500
-DATABASE_CAAS=mp-mariadb-dev
-DATABASE_CAAS_MEM=128M
-DATABASE_CAAS_SWAP=512M
-DATABASE_ROOT="sk5U2phvnjAMRe2wy0aD0ztCQaDusywp"
-DATABASE_NAME=myproj_local
-DATABASE_USER=myproj
-DATABASE_PASS="J4YPuJaieJ35gNAOSQQor87s82q2eUS1"
-DATABASE_PATH="/resources/database/"
-DATABASE_INIT=mariadb-init.sql
-DATABASE_BACK=mariadb-backup.sql
-
-MAILER_PLTF=mailhog-1.0
-MAILER_IMGK=alpine-3.12-mailhog-1.0
-MAILER_PORT=7502    # Port to send e-mail by PHP script
-MAILER_CAAS=mp-mailhog-dev
-MAILER_CAAS_MEM=128M
-MAILER_CAAS_SWAP=512M
-MAILER_APP_PORT=7503    # Port to see on browser the mail sent
-```
+Create the root `./.env` file from the [./.env.example](./.env.example) and follow its description to configure the platforms.
 
 Once the environment file is set, create each Docker environment file by the automated commands using GNU Make:
 
@@ -372,7 +328,7 @@ Repository directories structure overview:
 
 Set up platforms
 - Copy `.env.example` to `.env` and adjust settings (rest api port, database port, mail service port, container RAM usage, etc.)
-- By configuring the PHPcontainer with e.g. `APIREST_CAAS_MEM=128M`, remember to set the same RAM value into `./platform/nginx-php/docker/config/php/php.ini`
+- By configuring the PHPcontainer with e.g. `APIREST_CAAS_MEM=128M`, remember to set the same RAM value into `./platform/nginx-php-8.5/docker/config/php/php.ini`
 <br>
 
 Here’s a step-by-step guide for using this Platform repository along with your own REST API repository:

@@ -82,32 +82,32 @@ services-destroy: ## destroys all container services
 .PHONY: apirest-hostcheck apirest-info apirest-set apirest-create apirest-network apirest-ssh apirest-start apirest-stop apirest-destroy
 
 apirest-hostcheck: ## shows this project ports availability on local machine for apirest container
-	cd platform/$(APIREST_PLTF) && $(MAKE) port-check
+	cd platforms/$(APIREST_PLTF) && $(MAKE) port-check
 
 apirest-info: ## shows the apirest docker related information
-	cd platform/$(APIREST_PLTF) && $(MAKE) info
+	cd platforms/$(APIREST_PLTF) && $(MAKE) info
 
 apirest-set: ## sets the apirest enviroment file to build the container
-	cd platform/$(APIREST_PLTF) && $(MAKE) env-set
+	cd platforms/$(APIREST_PLTF) && $(MAKE) env-set
 
 apirest-create: ## creates the apirest container from Docker image
-	cd platform/$(APIREST_PLTF) && $(MAKE) build up
+	cd platforms/$(APIREST_PLTF) && $(MAKE) build up
 
 apirest-network: ## creates the apirest container network - execute this recipe first before others
 	$(MAKE) apirest-stop
-	cd platform/$(APIREST_PLTF) && $(DOCKER_COMPOSE) -f docker-compose.yml -f docker-compose.network.yml up -d
+	cd platforms/$(APIREST_PLTF) && $(DOCKER_COMPOSE) -f docker-compose.yml -f docker-compose.network.yml up -d
 
 apirest-ssh: ## enters the apirest container shell
-	cd platform/$(APIREST_PLTF) && $(MAKE) ssh
+	cd platforms/$(APIREST_PLTF) && $(MAKE) ssh
 
 apirest-start: ## starts the apirest container running
-	cd platform/$(APIREST_PLTF) && $(MAKE) start
+	cd platforms/$(APIREST_PLTF) && $(MAKE) start
 
 apirest-stop: ## stops the apirest container but its assets will not be destroyed
-	cd platform/$(APIREST_PLTF) && $(MAKE) stop
+	cd platforms/$(APIREST_PLTF) && $(MAKE) stop
 
 apirest-restart: ## restarts the running apirest container
-	cd platform/$(APIREST_PLTF) && $(MAKE) restart
+	cd platforms/$(APIREST_PLTF) && $(MAKE) restart
 
 apirest-destroy: ## destroys completly the apirest container
 	echo ${C_RED}"Attention!"${C_END};
@@ -115,7 +115,7 @@ apirest-destroy: ## destroys completly the apirest container
 	@echo -n ${C_RED}"Are you sure to proceed? "${C_END}"[y/n]: " && read response && if [ $${response:-'n'} != 'y' ]; then \
         echo ${C_GRN}"K.O.! container has been stopped but not destroyed."${C_END}; \
     else \
-		cd platform/$(APIREST_PLTF) && $(MAKE) stop clear destroy; \
+		cd platforms/$(APIREST_PLTF) && $(MAKE) stop clear destroy; \
 		echo -n ${C_GRN}"Do you want to clear DOCKER cache? "${C_END}"[y/n]: " && read response && if [ $${response:-'n'} != 'y' ]; then \
 			echo ${C_YEL}"The following command is delegated to be executed by user:"${C_END}; \
 			echo "$$ $(DOCKER) system prune"; \
@@ -131,32 +131,32 @@ apirest-destroy: ## destroys completly the apirest container
 .PHONY: db-hostcheck db-info db-set db-create db-ssh db-start db-stop db-destroy
 
 db-hostcheck: ## shows this project ports availability on local machine for database container
-	cd platform/$(DATABASE_PLTF) && $(MAKE) port-check
+	cd platforms/$(DATABASE_PLTF) && $(MAKE) port-check
 
 db-info: ## shows docker related information
-	cd platform/$(DATABASE_PLTF) && $(MAKE) info
+	cd platforms/$(DATABASE_PLTF) && $(MAKE) info
 
 db-set: ## sets the database enviroment file to build the container
-	cd platform/$(DATABASE_PLTF) && $(MAKE) env-set
+	cd platforms/$(DATABASE_PLTF) && $(MAKE) env-set
 
 db-create: ## creates the database container from Docker image
-	cd platform/$(DATABASE_PLTF) && $(MAKE) build up
+	cd platforms/$(DATABASE_PLTF) && $(MAKE) build up
 
 db-network: ## creates the database container external network
 	$(MAKE) apirest-stop
-	cd platform/$(DATABASE_PLTF) && $(DOCKER_COMPOSE) -f docker-compose.yml -f docker-compose.network.yml up -d
+	cd platforms/$(DATABASE_PLTF) && $(DOCKER_COMPOSE) -f docker-compose.yml -f docker-compose.network.yml up -d
 
 db-ssh: ## enters the apirest container shell
-	cd platform/$(DATABASE_PLTF) && $(MAKE) ssh
+	cd platforms/$(DATABASE_PLTF) && $(MAKE) ssh
 
 db-start: ## starts the database container running
-	cd platform/$(DATABASE_PLTF) && $(MAKE) start
+	cd platforms/$(DATABASE_PLTF) && $(MAKE) start
 
 db-stop: ## stops the database container but its assets will not be destroyed
-	cd platform/$(DATABASE_PLTF) && $(MAKE) stop
+	cd platforms/$(DATABASE_PLTF) && $(MAKE) stop
 
 db-restart: ## restarts the running database container
-	cd platform/$(DATABASE_PLTF) && $(MAKE) restart
+	cd platforms/$(DATABASE_PLTF) && $(MAKE) restart
 
 db-destroy: ## destroys completly the database container with its data
 	echo ${C_RED}"Attention!"${C_END};
@@ -164,7 +164,7 @@ db-destroy: ## destroys completly the database container with its data
 	@echo -n ${C_RED}"Are you sure to proceed? "${C_END}"[y/n]: " && read response && if [ $${response:-'n'} != 'y' ]; then \
         echo ${C_GRN}"K.O.! container has been stopped but not destroyed."${C_END}; \
     else \
-		cd platform/$(DATABASE_PLTF) && $(MAKE) clear destroy; \
+		cd platforms/$(DATABASE_PLTF) && $(MAKE) clear destroy; \
 		echo -n ${C_GRN}"Do you want to clear DOCKER cache? "${C_END}"[y/n]: " && read response && if [ $${response:-'n'} != 'y' ]; then \
 			echo ${C_YEL}"The following commands are delegated to be executed by user:"${C_END}; \
 			echo "$$ $(DOCKER) system prune"; \
@@ -179,28 +179,28 @@ db-destroy: ## destroys completly the database container with its data
 .PHONY: db-test-up db-test-down
 
 db-test-up: ## creates a side database for testing porpuses
-	cd platform/$(DATABASE_PLTF) && $(MAKE) test-up
+	cd platforms/$(DATABASE_PLTF) && $(MAKE) test-up
 
 db-test-down: ## drops the side testing database
-	cd platform/$(DATABASE_PLTF) && $(MAKE) test-down
+	cd platforms/$(DATABASE_PLTF) && $(MAKE) test-down
 
 .PHONY: db-sql-install db-sql-replace db-sql-backup db-sql-remote db-copy-remote
 
 db-sql-install: ## migrates sql file with schema / data into the container main database to init a project
 	$(MAKE) local-ownership-set;
-	cd platform/$(DATABASE_PLTF) && $(MAKE) sql-install
+	cd platforms/$(DATABASE_PLTF) && $(MAKE) sql-install
 
 db-sql-replace: ## replaces the container main database with the latest database .sql backup file
 	$(MAKE) local-ownership-set;
-	cd platform/$(DATABASE_PLTF) && $(MAKE) sql-replace
+	cd platforms/$(DATABASE_PLTF) && $(MAKE) sql-replace
 
 db-sql-backup: ## copies the container main database as backup into a .sql file
 	$(MAKE) local-ownership-set;
-	cd platform/$(DATABASE_PLTF) && $(MAKE) sql-backup
+	cd platforms/$(DATABASE_PLTF) && $(MAKE) sql-backup
 
 db-sql-drop: ## drops the container main database but recreates the database without schema as a reset action
 	$(MAKE) local-ownership-set;
-	cd platform/$(DATABASE_PLTF) && $(MAKE) sql-drop
+	cd platforms/$(DATABASE_PLTF) && $(MAKE) sql-drop
 
 # -------------------------------------------------------------------------------------------------
 #  Mailer Service
@@ -208,32 +208,32 @@ db-sql-drop: ## drops the container main database but recreates the database wit
 .PHONY: mailer-hostcheck mailer-info mailer-set mailer-create mailer-network mailer-ssh mailer-start mailer-stop mailer-destroy
 
 mailer-hostcheck: ## shows this project ports availability on local machine for mailer container
-	cd platform/$(MAILER_PLTF) && $(MAKE) port-check
+	cd platforms/$(MAILER_PLTF) && $(MAKE) port-check
 
 mailer-info: ## shows the mailer docker related information
-	cd platform/$(MAILER_PLTF) && $(MAKE) info
+	cd platforms/$(MAILER_PLTF) && $(MAKE) info
 
 mailer-set: ## sets the mailer enviroment file to build the container
-	cd platform/$(MAILER_PLTF) && $(MAKE) env-set
+	cd platforms/$(MAILER_PLTF) && $(MAKE) env-set
 
 mailer-create: ## creates the mailer container from Docker image
-	cd platform/$(MAILER_PLTF) && $(MAKE) build up
+	cd platforms/$(MAILER_PLTF) && $(MAKE) build up
 
 mailer-network: ## creates the mailer container network - execute this recipe first before others
 	$(MAKE) mailer-stop
-	cd platform/$(MAILER_PLTF) && $(DOCKER_COMPOSE) -f docker-compose.yml -f docker-compose.network.yml up -d
+	cd platforms/$(MAILER_PLTF) && $(DOCKER_COMPOSE) -f docker-compose.yml -f docker-compose.network.yml up -d
 
 mailer-ssh: ## enters the mailer container shell
-	cd platform/$(MAILER_PLTF) && $(MAKE) ssh
+	cd platforms/$(MAILER_PLTF) && $(MAKE) ssh
 
 mailer-start: ## starts the mailer container running
-	cd platform/$(MAILER_PLTF) && $(MAKE) start
+	cd platforms/$(MAILER_PLTF) && $(MAKE) start
 
 mailer-stop: ## stops the mailer container but its assets will not be destroyed
-	cd platform/$(MAILER_PLTF) && $(MAKE) stop
+	cd platforms/$(MAILER_PLTF) && $(MAKE) stop
 
 mailer-restart: ## restarts the running mailer container
-	cd platform/$(MAILER_PLTF) && $(MAKE) restart
+	cd platforms/$(MAILER_PLTF) && $(MAKE) restart
 
 mailer-destroy: ## destroys completly the mailer container
 	echo ${C_RED}"Attention!"${C_END};
@@ -241,7 +241,7 @@ mailer-destroy: ## destroys completly the mailer container
 	@echo -n ${C_RED}"Are you sure to proceed? "${C_END}"[y/n]: " && read response && if [ $${response:-'n'} != 'y' ]; then \
         echo ${C_GRN}"K.O.! container has been stopped but not destroyed."${C_END}; \
     else \
-		cd platform/$(MAILER_PLTF) && $(MAKE) stop clear destroy; \
+		cd platforms/$(MAILER_PLTF) && $(MAKE) stop clear destroy; \
 		echo -n ${C_GRN}"Do you want to clear DOCKER cache? "${C_END}"[y/n]: " && read response && if [ $${response:-'n'} != 'y' ]; then \
 			echo ${C_YEL}"The following command is delegated to be executed by user:"${C_END}; \
 			echo "$$ $(DOCKER) system prune"; \
@@ -257,32 +257,32 @@ mailer-destroy: ## destroys completly the mailer container
 .PHONY: broker-hostcheck broker-info broker-set broker-create broker-network broker-ssh broker-start broker-stop broker-destroy
 
 broker-hostcheck: ## shows this project ports availability on local machine for broker container
-	cd platform/$(BROKER_PLTF) && $(MAKE) port-check
+	cd platforms/$(BROKER_PLTF) && $(MAKE) port-check
 
 broker-info: ## shows the broker docker related information
-	cd platform/$(BROKER_PLTF) && $(MAKE) info
+	cd platforms/$(BROKER_PLTF) && $(MAKE) info
 
 broker-set: ## sets the broker enviroment file to build the container
-	cd platform/$(BROKER_PLTF) && $(MAKE) env-set
+	cd platforms/$(BROKER_PLTF) && $(MAKE) env-set
 
 broker-create: ## creates the broker container from Docker image
-	cd platform/$(BROKER_PLTF) && $(MAKE) build up
+	cd platforms/$(BROKER_PLTF) && $(MAKE) build up
 
 broker-network: ## creates the broker container network - execute this recipe first before others
 	$(MAKE) broker-stop
-	cd platform/$(BROKER_PLTF) && $(DOCKER_COMPOSE) -f docker-compose.yml -f docker-compose.network.yml up -d
+	cd platforms/$(BROKER_PLTF) && $(DOCKER_COMPOSE) -f docker-compose.yml -f docker-compose.network.yml up -d
 
 broker-ssh: ## enters the broker container shell
-	cd platform/$(BROKER_PLTF) && $(MAKE) ssh
+	cd platforms/$(BROKER_PLTF) && $(MAKE) ssh
 
 broker-start: ## starts the broker container running
-	cd platform/$(BROKER_PLTF) && $(MAKE) start
+	cd platforms/$(BROKER_PLTF) && $(MAKE) start
 
 broker-stop: ## stops the broker container but its assets will not be destroyed
-	cd platform/$(BROKER_PLTF) && $(MAKE) stop
+	cd platforms/$(BROKER_PLTF) && $(MAKE) stop
 
 broker-restart: ## restarts the running broker container
-	cd platform/$(BROKER_PLTF) && $(MAKE) restart
+	cd platforms/$(BROKER_PLTF) && $(MAKE) restart
 
 broker-destroy: ## destroys completly the broker container
 	echo ${C_RED}"Attention!"${C_END};
@@ -290,7 +290,7 @@ broker-destroy: ## destroys completly the broker container
 	@echo -n ${C_RED}"Are you sure to proceed? "${C_END}"[y/n]: " && read response && if [ $${response:-'n'} != 'y' ]; then \
         echo ${C_GRN}"K.O.! container has been stopped but not destroyed."${C_END}; \
     else \
-		cd platform/$(BROKER_PLTF) && $(MAKE) stop clear destroy; \
+		cd platforms/$(BROKER_PLTF) && $(MAKE) stop clear destroy; \
 		echo -n ${C_GRN}"Do you want to clear DOCKER cache? "${C_END}"[y/n]: " && read response && if [ $${response:-'n'} != 'y' ]; then \
 			echo ${C_YEL}"The following command is delegated to be executed by user:"${C_END}; \
 			echo "$$ $(DOCKER) system prune"; \

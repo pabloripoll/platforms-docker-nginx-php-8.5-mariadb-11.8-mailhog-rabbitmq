@@ -163,37 +163,37 @@ network:
 #  Testing Database
 # -------------------------------------------------------------------------------------------------
 
-.PHONY: db-test-up db-test-down
+.PHONY: test-up test-down
 
-db-test-up: ## creates a side database for tests
+test-up: ## creates a side database for tests
 	$(DOCKER) exec -it $(DOCKER_CONTAINER) sh -c 'dropdb -f $(DATABASE_NAME)_testing -U "$(DATABASE_USER)"; createdb $(DATABASE_NAME)_testing -U "$(DATABASE_USER)"';
 
-db-test-down: ## drops the side database for tests
+test-down: ## drops the side database for tests
 	$(DOCKER) exec -it $(DOCKER_CONTAINER) sh -c 'dropdb -f $(DATABASE_NAME)_testing -U "$(DATABASE_USER)";';
 
 # -------------------------------------------------------------------------------------------------
 #  MySQL / MariaDB | directory path is defined in root .env file, e.g.: ./../../resources/database/
 # -------------------------------------------------------------------------------------------------
 
-.PHONY: db-sql-install db-sql-install-clear db-sql-install-clear db-sql-backup db-sql-backup-clear db-sql-drop
+.PHONY: sql-install sql-install-clear sql-install-clear sql-backup sql-backup-clear sql-drop
 
-db-sql-install: ## imports [file-name].sql file into database container as an initial project database located in /[dir-path]/
+sql-install: ## imports [file-name].sql file into database container as an initial project database located in /[dir-path]/
 	$(DOCKER) exec -i $(DOCKER_CONTAINER) sh -c 'chown -R mysql:mysql /var/lib/mysql'
 	$(DOCKER) exec -i $(DOCKER_CONTAINER) sh -c 'mariadb -v -u "$(DATABASE_USER)" -p$(DATABASE_PASS) -D $(DATABASE_NAME)' < $(DATABASE_PATH)$(DATABASE_INIT)
 	echo ${C_YEL}"$(PROJECT_NAME) DATABASE"${C_END}" has been copied to container from "${C_BLU}"$(DATABASE_PATH)$(DATABASE_INIT)"${C_END}
 
-db-sql-install-clear: ## clears up the [file-name].sql file as an initial project database located in /[dir-path]/
+sql-install-clear: ## clears up the [file-name].sql file as an initial project database located in /[dir-path]/
 ifeq ($(DETECTED_OS), Windows)
 	if not exist "$(DATABASE_PATH)$(DATABASE_INIT)" type nul > "$(DATABASE_PATH)$(DATABASE_INIT)"
 else
 	[ -d "$(DATABASE_PATH)$(DATABASE_INIT)" ] || cat /dev/null > "$(DATABASE_PATH)$(DATABASE_INIT)"
 endif
 
-db-sql-replace: ## replaces the database container with the located in /[dir-path]/[file-name].sql file
+sql-replace: ## replaces the database container with the located in /[dir-path]/[file-name].sql file
 	$(DOCKER) exec -i $(DOCKER_CONTAINER) sh -c 'mariadb -v -u "$(DATABASE_USER)" -p$(DATABASE_PASS) -D $(DATABASE_NAME)' < $(DATABASE_PATH)$(DATABASE_BACK)
 	echo ${C_YEL}"$(PROJECT_NAME) DATABASE"${C_END}" has been replaced from "${C_BLU}"$(DATABASE_PATH)$(DATABASE_BACK)"${C_END}
 
-db-sql-backup: ## exports into [file-name].sql file the project database backup into /[dir-path]/
+sql-backup: ## exports into [file-name].sql file the project database backup into /[dir-path]/
 ifeq ($(DETECTED_OS), Windows)
 	if not exist "$(DATABASE_PATH)$(DATABASE_BACK)" type nul > "$(DATABASE_PATH)$(DATABASE_BACK)"
 else
@@ -203,14 +203,14 @@ endif
 	$(DOCKER) exec $(DOCKER_CONTAINER) sh -c 'mariadb-dump -u "$(DATABASE_USER)" -p$(DATABASE_PASS) $(DATABASE_NAME)' > $(DATABASE_PATH)$(DATABASE_BACK)
 	echo ${C_YEL}"$(PROJECT_NAME) DATABASE"${C_END}" backup has been created at "${C_BLU}"$(DATABASE_PATH)$(DATABASE_BACK)"${C_END}
 
-db-sql-backup-clear: ## clears up the project database backup [file-name].sql file located in /[dir-path]/
+sql-backup-clear: ## clears up the project database backup [file-name].sql file located in /[dir-path]/
 ifeq ($(DETECTED_OS), Windows)
 	if not exist "$(DATABASE_PATH)$(DATABASE_BACK)" type nul > "$(DATABASE_PATH)$(DATABASE_BACK)"
 else
 	[ -d "$(DATABASE_PATH)$(DATABASE_BACK)" ] || cat /dev/null > "$(DATABASE_PATH)$(DATABASE_BACK)"
 endif
 
-db-sql-drop: ## drops the current database and creates an empty new one inside the container
+sql-drop: ## drops the current database and creates an empty new one inside the container
 	$(DOCKER) exec -i $(DOCKER_CONTAINER) sh -c 'mariadb -v -u "$(DATABASE_USER)" -p$(DATABASE_PASS) -e "DROP DATABASE IF EXISTS $(DATABASE_NAME);"'
 	$(DOCKER) exec -i $(DOCKER_CONTAINER) sh -c 'mariadb -v -u "$(DATABASE_USER)" -p$(DATABASE_PASS) -e "CREATE DATABASE IF NOT EXISTS $(DATABASE_NAME);"'
 	echo ${C_YEL}"$(PROJECT_NAME) DATABASE"${C_END}" in container "${C_YEL}"$(DOCKER_CONTAINER)"${C_END}" has been deleted."
@@ -219,9 +219,9 @@ db-sql-drop: ## drops the current database and creates an empty new one inside t
 #  Remote server copy | directory path is defined in root .env file, e.g.: ./../../resources/database/
 # -------------------------------------------------------------------------------------------------
 
-.PHONY: db-remote-host-copy db-remote-file-copy
+.PHONY: remote-host-copy remote-file-copy
 
-db-remote-host-copy: ## copies referenced remote database by tcp connection into /[dir-path]/[file-name].sql for local development
+remote-host-copy: ## copies referenced remote database by tcp connection into /[dir-path]/[file-name].sql for local development
 ifeq ($(DETECTED_OS), Windows)
 	if not exist "$(DATABASE_PATH)$(DATABASE_INIT)" type nul > "$(DATABASE_PATH)$(DATABASE_INIT)"
 else
@@ -231,7 +231,7 @@ endif
 	$(DOCKER) cp $(DOCKER_CONTAINER):/var/tmp/$(DATABASE_INIT) $(DATABASE_PATH)$(DATABASE_INIT);
 	$(DOCKER) exec -i $(DOCKER_CONTAINER) sh -c 'rm /var/tmp/$(DATABASE_INIT)';
 
-db-remote-file-copy: ## copies referenced remote database file into /[dir-path]/[file-name].sql for local development
+remote-file-copy: ## copies referenced remote database file into /[dir-path]/[file-name].sql for local development
 ifeq ($(DETECTED_OS), Windows)
 	if not exist "$(DATABASE_PATH)$(DATABASE_INIT)" type nul > "$(DATABASE_PATH)$(DATABASE_INIT)"
 else

@@ -93,9 +93,13 @@ apirest-set: ## sets the apirest enviroment file to build the container
 apirest-create: ## creates the apirest container from Docker image
 	cd platforms/$(APIREST_PLTF) && $(MAKE) build up
 
-apirest-network: ## creates the apirest container network - execute this recipe first before others
+apirest-network: ## recreates the apirest container with specified network
 	$(MAKE) apirest-stop
-	cd platforms/$(APIREST_PLTF) && $(DOCKER_COMPOSE) -f docker-compose.yml -f docker-compose.network.yml up -d
+	cd platforms/$(APIREST_PLTF) && $(MAKE) network
+
+apirest-host-gateway: ## recreates the apirest container with docker internal host-gateway with local machine
+	$(MAKE) apirest-stop
+	cd platforms/$(APIREST_PLTF) && $(MAKE) host-gateway
 
 apirest-ssh: ## enters the apirest container shell
 	cd platforms/$(APIREST_PLTF) && $(MAKE) ssh

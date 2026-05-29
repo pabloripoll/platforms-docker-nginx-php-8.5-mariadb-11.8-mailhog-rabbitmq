@@ -1,5 +1,4 @@
 ## Sources to build the container
-FROM alpine:3.23
 FROM php:8.5-fpm-alpine
 
 ARG UID
@@ -78,13 +77,13 @@ RUN apk add --no-cache \
   php85-pdo_sqlite \
   php85-sqlite3 \
   ## Mysql - Mariadb
-  #php85-pdo_mysql \
-  #php85-mysqlnd \
-  #php85-mysqli \
+  php85-pdo_mysql \
+  php85-mysqlnd \
+  php85-mysqli
   ## Postgre
-  php85-pgsql \
-  php85-pdo_pgsql \
-  postgresql-dev
+  #php85-pgsql \
+  #php85-pdo_pgsql \
+  #postgresql-dev
   ## MongoDB
   #php85-pecl-mongodb \
   ## Redis
@@ -110,9 +109,9 @@ RUN apk add --no-cache \
 RUN docker-php-ext-install \
   pdo \
   ## Mysql - Mariadb
-  #pdo_mysql \
+  pdo_mysql \
   ## Postgre
-  pdo_pgsql \
+  #pdo_pgsql \
   ## Sockets
   sockets \
   ## Process Control (jobs)

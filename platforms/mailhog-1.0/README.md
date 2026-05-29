@@ -1,18 +1,15 @@
 <div id="top-header" style="with:100%;height:auto;text-align:right;"></div>
 
-# MARIA DB 11.8
+# MAILHOG
 
 - [./back](../../README.md)
-- [Source](#source)
 - [Container Configuration](#container)
 - [Container Management](#management)
 <br>
 
 ## <a id="source"></a>Source
 
-- https://github.com/MariaDB/mariadb-docker
-- https://github.com/MariaDB/mariadb-docker/tree/master/11.8
-- https://hub.docker.com/_/mariadb
+- https://github.com/mailhog/MailHog/releases
 <br><br>
 
 ## <a id="container"></a>Container Configuration
@@ -50,21 +47,11 @@ $ make up                             starts and recreates containers if compose
 $ make build                          builds and ensures changes in the Dockerfile, build steps, or copied-in files are applied. Not --no-recreate
 $ make network                        starts up into an existing custom network for container-to-container communication, runnning in detached mode
 $ make start                          starts the container and put on running from latest configuration
-$ make stop                           stops the running container but data will not be destroyed
+$ make stop                           stops the running container but data won't be destroyed
 $ make restart                        restarts the running container
 $ make clear                          removes container from Docker running containers
 $ make destroy                        delete container image from Docker cache
 $ make dev                            sets a development enviroment
-$ make test-up                        creates a side database for tests
-$ make test-down                      drops the side database for tests
-$ make sql-install                    imports [file-name].sql file into database container as an initial project database located in /[dir-path]/
-$ make sql-install-clear              clears up the [file-name].sql file as an initial project database located in /[dir-path]/
-$ make sql-replace                    replaces the database container with the located in /[dir-path]/[file-name].sql file
-$ make sql-backup                     exports into [file-name].sql file the project database backup into /[dir-path]/
-$ make sql-backup-clear               clears up the project database backup [file-name].sql file located in /[dir-path]/
-$ make sql-drop                       drops the current database and creates an empty new one inside the container
-$ make remote-host-copy               copies referenced remote database by tcp connection into /[dir-path]/[file-name].sql for local development
-$ make remote-file-copy               copies referenced remote database file into /[dir-path]/[file-name].sql for local development
 ```
 <br>
 

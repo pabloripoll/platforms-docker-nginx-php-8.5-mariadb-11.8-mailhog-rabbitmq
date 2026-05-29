@@ -29,7 +29,7 @@ DOCKER_IMGK=$(DATABASE_IMGK)
 DOCKER_CAAS=$(DATABASE_CAAS)
 DOCKER_PORT=$(DATABASE_PORT)
 DOCKER_BIND=$(DATABASE_BIND)
-DOCKER_CPU=$(DATABASE_CAAS_CPU)
+DOCKER_CPUS=$(DATABASE_CAAS_CPUS)
 DOCKER_MEM=$(DATABASE_CAAS_MEM)
 DOCKER_SWAP=$(DATABASE_CAAS_SWAP)
 
@@ -95,10 +95,10 @@ else
 	COMPOSE_PROJECT_CPUS=\"$(DOCKER_CPUS)\"\r\n\
 	COMPOSE_PROJECT_MEM=\"$(DOCKER_MEM)\"\r\n\
 	COMPOSE_PROJECT_SWAP=\"$(DOCKER_SWAP)\"\r\n\
-	MYSQL_ROOT_PASSWORD=\"$(SQL_ROOT)\"\r\n\
-	MYSQL_DATABASE=\"$(SQL_NAME)\"\r\n\
-	MYSQL_USER=\"$(SQL_USER)\"\r\n\
-	MYSQL_PASSWORD=\"$(SQL_PASS)\""> ./docker/.env;
+	MARIADB_ROOT_PASSWORD=\"$(SQL_ROOT)\"\r\n\
+	MARIADB_DATABASE=\"$(SQL_NAME)\"\r\n\
+	MARIADB_USER=\"$(SQL_USER)\"\r\n\
+	MARIADB_PASSWORD=\"$(SQL_PASS)\""> ./docker/.env;
 	echo ${C_BLU}"$(PROJECT_NAME)"${C_END}" DATABASE "${C_YEL}$(DOCKER_PLTF)${C_END}" - "${C_YEL}"docker-compose.yml"${C_END}" .env file "${C_GRN}"has been set."${C_END};
 	echo ${C_BLU}"$(PROJECT_NAME)"${C_END}" DATABASE "${C_YEL}$(DOCKER_PLTF)${C_END}" - Container name: "${C_GRN}$(DOCKER_CONTAINER)${C_END}
 	echo ${C_BLU}"$(PROJECT_NAME)"${C_END}" DATABASE "${C_YEL}$(DOCKER_PLTF)${C_END}" - Container image: "${C_GRN}$(DOCKER_CONTAINER):$(DOCKER_IMGK)${C_END}
@@ -129,16 +129,19 @@ info: ## shows container information
 ssh: ## enters the container shell
 	$(DOCKER_EXEC_SSH)
 
-build: ## builds the container from Dockerfile
-	cd docker && $(DOCKER_COMPOSE) up --build --no-recreate -d
+up: ## starts and recreates containers if compose config or image changed, runnning in detached mode
+	cd docker && $(DOCKER_COMPOSE) -f docker-compose.yml -f docker-compose.public.yml up -d
 
-up: ## attaches to containers for a service and also starts any linked services
-	cd docker && $(DOCKER_COMPOSE) up -d
+build: ## builds and ensures changes in the Dockerfile, build steps, or copied-in files are applied. Not --no-recreate
+	cd docker && $(DOCKER_COMPOSE) -f docker-compose.yml -f docker-compose.public.yml up --build -d
 
-start: ## starts the container and put on running
+network: ## starts up into an existing custom network for container-to-container communication, runnning in detached mode
+	cd docker && $(DOCKER_COMPOSE) -f docker-compose.yml -f docker-compose.network.yml up -d
+
+start: ## starts the container and put on running from latest configuration
 	cd docker && $(DOCKER_COMPOSE) start
 
-stop: ## stops the running container but data won't be destroyed
+stop: ## stops the running container but data will not be destroyed
 	cd docker && $(DOCKER_COMPOSE) stop
 
 restart: ## restarts the running container
@@ -151,13 +154,10 @@ clear: ## removes container from Docker running containers
 
 destroy: ## delete container image from Docker cache
 	cd docker && $(DOCKER) rmi -f $(DOCKER_CONTAINER):$(DOCKER_IMGK)
-	$(SUDO) rm -rf data root
+	cd docker && $(SUDO) rm -rf data root
 
 dev: ## sets a development enviroment
 	echo ${C_YEL}"\"dev\" recipe has not usage in this project"${C_END};
-
-network:
-	cd docker && $(DOCKER_COMPOSE) -f docker-compose.yml -f docker-compose.network.yml up -d
 
 # -------------------------------------------------------------------------------------------------
 #  Testing Database

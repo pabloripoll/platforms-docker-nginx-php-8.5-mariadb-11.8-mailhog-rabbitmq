@@ -6,21 +6,20 @@ services:
       context: ./
       dockerfile: Dockerfile
     container_name: ${COMPOSE_PROJECT_LEAD}-${COMPOSE_PROJECT_NAME}
-    ports:
-      - ${COMPOSE_PROJECT_PORT}:3306
     deploy:
       resources:
         limits:
+          cpus: ${COMPOSE_PROJECT_CPUS}
           memory: ${COMPOSE_PROJECT_MEM}
     environment:
       PUID: 1000
       PGID: 1000
       TZ: Etc/UTC
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD}
+      MARIADB_DATABASE: ${MARIADB_DATABASE}
+      MARIADB_USER: ${MARIADB_USER}
+      MARIADB_PASSWORD: ${MARIADB_PASSWORD}
     volumes:
-      - ../data:/var/lib/mysql
+      - ./data:/var/lib/mysql
     tty: true
     restart: unless-stopped

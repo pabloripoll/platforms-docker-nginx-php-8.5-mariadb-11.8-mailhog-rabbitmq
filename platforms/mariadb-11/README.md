@@ -2,7 +2,7 @@
     <img src="./../../resources/docs/images/pr-banner-long.png">
 </div>
 
-# MARIA DB 11.8
+# MARIA DB 11
 
 - [./main](../../README.md)
 - [Features](#features)
@@ -40,7 +40,7 @@ Require environment variables at `./docker/.env` *(all are customizable)*:
 ```bash
 COMPOSE_PROJECT_LEAD="myproj"                           # <- lead abbreviation or acronym as part of related containers naming rule -------------------------> #
 COMPOSE_PROJECT_CNET="mp-dev"                           # <- useful for networking to connect between containers --------------------------------------------> #
-COMPOSE_PROJECT_IMGK="ubuntu24.04-mariadb-11.8"        # <- real main image keys to manage automations for sharing resources -------------------------------> #
+COMPOSE_PROJECT_IMGK="ubuntu-24-mariadb-11"              # <- real main image keys to manage automations for sharing resources -------------------------------> #
 COMPOSE_PROJECT_NAME="mp-mariadb-dev"                   # <- container name to build the service - it is important to set the environment in this variable --> #
 COMPOSE_PROJECT_HOST="127.0.0.1"                        # <- machine hostname referrer - not necessary for this project -------------------------------------> #
 COMPOSE_PROJECT_PORT=7710                               # <- local machine port opened for container service ------------------------------------------------> #

@@ -1,0 +1,4 @@
+# Ignore custom settings
+.env
+/root
+/config
